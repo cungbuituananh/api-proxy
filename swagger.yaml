@@ -1,0 +1,140 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Swagger API Proxy
+  license:
+    name: MIT
+host: petstore.swagger.io
+schemes:
+  - http
+paths:
+  /rest/orgUnits:
+    get:
+      summary: List all orgUnits
+      operationId: getOrgUnits
+      tags:
+        - orgUnits
+      parameters:
+        - name: where
+          in: query
+          required: true
+          type: string
+          maximum: 250
+      responses:
+        "200":
+          description: 200 success
+        default:
+          description: unexpected error
+    post:
+      summary: Create a pet
+      operationId: createOrgUnits
+      tags:
+        - orgUnits
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            required:
+              - type
+              - parentId
+              - name
+            properties:
+              type:
+                type: string
+                maxLength: 250
+              description:
+                type: string
+                maxLength: 250
+              parentId:
+                type: integer
+                maxLength: 10
+              name:
+                type: string
+                maxLength: 250
+      responses:
+        "200":
+          description: 200 success
+        default:
+          description: unexpected error
+
+  /rest/orgUnitAttributes:
+    post:
+      summary: List all orgUnits
+      operationId: orgUnitAttributes
+      tags:
+        - orgUnitAttributes
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            required:
+              - name
+              - value
+              - orgUnitId
+            properties:
+              name:
+                type: string
+                maxLength: 250
+              value:
+                type: number
+                maxLength: 10
+              orgUnitId:
+                type: number
+                maxLength: 10
+      responses:
+        "200":
+          description: 200 success
+        default:
+          description: unexpected error
+
+  /rest/user:
+    post:
+      summary: create user
+      operationId: users
+      tags:
+        - users
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            required:
+              - firstName
+              - lastName
+              - email
+              - language
+              - orgUnitId
+            properties:
+              firstName:
+                type: string
+                maxLength: 250
+              lastName:
+                type: string
+                maxLength: 250
+              email:
+                type: string
+                maxLength: 250
+              language:
+                type: string
+                maxLength: 250
+              orgUnitId:
+                type: number
+                maxLength: 10
+      responses:
+        "200":
+          description: 200 success
+        default:
+          description: unexpected error
+
+  Error:
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: integer
+        # format: int32
+      message:
+        type: string

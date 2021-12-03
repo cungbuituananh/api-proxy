@@ -1,0 +1,12 @@
+{
+  "name": "api_proxy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "openapi-validator-middleware": "^3.2.4",
+    "request": "^2.88.2"
+  }
+}
