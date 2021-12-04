@@ -29,54 +29,54 @@ app.post("/rest/orgUnits", swaggerValidation.validate, forwardRequest, async (re
 
 //rest/users
 app.get("/rest/users", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("GET /rest/users");
+  res.send(res.response);
 });
 
 app.post("/rest/users", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("POST /rest/users");
+  res.send(res.response);
 });
 
 app.put("/rest/users/:xId", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("POST /rest/users/:xId");
+  res.send(res.response);
 });
 
 app.delete("/rest/users/:xId", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("DELETE /rest/users/:xId");
+  res.send(res.response);
 });
 
 //rest/userRoles
 app.post("/rest/userRoles", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("POST /rest/userRoles");
+  res.send(res.response);
 });
 
 //rest/addresses
 app.get("/rest/addresses", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("GET /rest/addresses");
+  res.send(res.response);
 });
 
 app.post("/rest/addresses", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("POST /rest/addresses");
+  res.send(res.response);
 });
 
 app.delete("/rest/addresses", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("DELETE /rest/addresses");
+  res.send(res.response);
 });
 
 //rest/orgUnitAttributes
 app.get("/rest/orgUnitAttributes", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("GET /rest/orgUnitAttributes");
+  res.send(res.response);
 });
 
 app.post("/rest/orgUnitAttributes", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("POST /rest/orgUnitAttributes");
+  res.send(res.response);
 });
 
 app.put("/rest/orgUnitAttributes/:xId", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("PUT /rest/orgUnitAttributes/:xId");
+  res.send(res.response);
 });
 
 app.delete("/rest/orgUnitAttributes/:xId", swaggerValidation.validate, forwardRequest, (req, res, next) => {
-  res.send("DELETE /rest/orgUnitAttributes/:xId");
+  res.send(res.response);
 });
 
 //health
@@ -94,43 +94,48 @@ app.use((err, req, res, next) => {
   }
 });
 
-async function forwardRequest (req, res, next) {
-
-  if(!req.headers.authorization) {
-    return res.status(response.status)
-    .json({
-      status: false,
-      message: ['Authorization header is required']
-    });
+async function forwardRequest(req, res, next) {
+  if (req.headers.authorization === undefined) {
+    return res.status(403)
+      .json({
+        status: false,
+        message: ['Authorization header is required']
+      });
   }
 
-  let response = await axios({
-    method: req.method,
-    timeout: 1000,
-    headers: {
-      Authorization: req.headers.authorization
-    },
-    url: UPSTREAM + req.url,
-    query: req.query,
-    data: {
-      status: true,
-      data: req.body
-    }
-  })
-
-  if(response.status < 400) {
-    res.response = response.data;
-    next();
-  } else {
-    return res
-    .status(response.status)
-    .json({
-      status: false,
+  try {
+    console.log(req.body);
+    let response = await axios({
+      method: req.method,
+      timeout: 30000,
+      headers: {
+        Authorization: req.headers.authorization
+      },
+      url: UPSTREAM + req.url,
+      query: req.query,
       data: req.body
     });
+
+    if (response.status < 400) {
+      res.response = response.data;
+      next();
+    } else {
+      return res
+        .status(response.status)
+        .json({
+          status: false,
+          data: req.body
+        });
+    }
+  } catch (ex) {
+    return res
+      .status(ex.response.status)
+      .json({
+        status: false,
+        data: ex.response.data
+      });
   }
 }
-
 
 app.listen(PORT, HOST, () => {
   console.log(`Starting Proxy at ${HOST}:${PORT}`);
