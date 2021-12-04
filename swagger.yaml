@@ -19,14 +19,14 @@ paths:
           in: query
           required: true
           type: string
-          maxLength: 250
+          maximum: 250
       responses:
         "200":
           description: 200 success
         default:
           description: unexpected error
     post:
-      summary: Create PBX
+      summary: Create a pet
       operationId: createOrgUnits
       tags:
         - orgUnits
@@ -57,27 +57,11 @@ paths:
           description: 200 success
         default:
           description: unexpected error
-  /rest/origUnit/{xId}:
-    delete:
-      summary: Delete PBX
-      operationId: deletePbx
-      tags:
-        - orgUnits
-      parameters:
-        - name: xId
-          in: path
-          required: true
-          type: string
-          maxLength: 250
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
+
   /rest/orgUnitAttributes:
     post:
-      summary: Create max attributes
-      operationId: createMaxAttributes
+      summary: List all orgUnits
+      operationId: orgUnitAttributes
       tags:
         - orgUnitAttributes
       parameters:
@@ -94,36 +78,21 @@ paths:
                 type: string
                 maxLength: 250
               value:
-                type: integer
+                type: number
                 maxLength: 10
               orgUnitId:
-                type: integer
+                type: number
                 maxLength: 10
       responses:
         "200":
           description: 200 success
         default:
           description: unexpected error
-    get:
-      summary: Get properties having in PBX
-      operationId: getPropertiesPbx
-      tags:
-        - orgUnitAttributes
-      parameters:
-        - name: where
-          in: query
-          type: integer
-          required: true
-          maxLength: 10
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
-  /rest/users:
+
+  /rest/user:
     post:
       summary: create user
-      operationId: createUser
+      operationId: users
       tags:
         - users
       parameters:
@@ -151,219 +120,15 @@ paths:
                 type: string
                 maxLength: 250
               orgUnitId:
-                type: integer
+                type: number
                 maxLength: 10
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
-    get:
-      summary: query user manage PBX
-      operationId: getAdminId
-      tags:
-        - users
-      parameters:
-        - name: where
-          in: query
-          required: true
-          type: string
-          maxLength: 250
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
-  /rest/users/{xId}:
-    put:
-      summary: block user admin access
-      operationId: blockUser
-      tags:
-        - users
-      parameters:
-        - name: xId
-          in: path
-          type: integer
-          required: true
-        - name: body
-          in: body
-          required: true
-          schema:
-            required:
-              - id
-              - passwordBlocked
-            properties:
-              id:
-                type: integer
-              passwordBlocked:
-                type: string
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
-    delete:
-      summary: delete user admin
-      operationId: deleteAdmin
-      tags:
-        - users
-      parameters:
-        - name: xId
-          in: path
-          type: integer
-          maxLength: 10
-          required: true
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
-  /rest/orgUnitAttributes/{xId}:
-    put:
-      summary: Increase personal extension
-      operationId: increasePersonalExtensionId
-      tags:
-        - orgUnitAttributes
-      parameters:
-        - name: xId
-          in: path
-          type: integer
-          maxLength: 10
-          required: true
-        - name: body
-          in: body
-          required: true
-          schema:
-            required:
-              - id
-              - name
-              - value
-              - orgUnitId
-            properties:
-              id:
-                type: integer
-                maxLength: 10
-              name:
-                type: string
-                maxLength: 250
-              value:
-                type: integer
-                maxLength: 10
-              orgUnitId:
-                type: integer
-                maxLength: 10
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
-    delete:
-      summary: delete internal
-      operationId: deleteInternal
-      tags:
-        - orgUnitAttributes
-      parameters:
-        - name: id
-          in: path
-          type: integer
-          maxLength: 10
-          required: true
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
-  /rest/userRoles:
-    post:
-      summary: user role
-      operationId: userRoles
-      tags:
-        - userRoles
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            required:
-              - userId
-              - role
-              - orgUnitId
-            properties:
-              userId:
-                type: string
-              role:
-                type: string
-              orgUnitId:
-                type: integer
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
-  /rest/addresss:
-    get:
-      summary: get list Sip
-      operationId: getListSip
-      tags:
-        - address
-      parameters:
-        - name: where
-          in: query
-          type: string
-          maxLength: 250
-          required: true
       responses:
         "200":
           description: 200 success
         default:
           description: unexpected error
 
-    post:
-      summary: Assign SIP
-      operationId: assignSip
-      tags:
-        - address
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            required:
-              - integer
-              - orgUnitId
-            properties:
-              integer:
-                type: integer
-                maxLength: 10
-              orgUnitId:
-                type: integer
-                maxLength: 10
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
-  /rest/addresss/{xId}:
-    delete:
-      summary: Delete Sip
-      operationId: deleteSip
-      tags:
-        - address
-      parameters:
-        - name: xId
-          in: path
-          required: true
-          type: string
-          maxLength: 250
-      responses:
-        "200":
-          description: 200 success
-        default:
-          description: unexpected error
-
-definitions:
   Error:
-    type: object
     required:
       - code
       - message

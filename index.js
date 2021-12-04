@@ -36,12 +36,12 @@ app.post("/rest/users", swaggerValidation.validate, (req, res, next) => {
   res.send("POST /rest/users");
 });
 
-app.put("/rest/users/{id}", swaggerValidation.validate, (req, res, next) => {
-  res.send("POST /rest/users/{id}");
+app.put("/rest/users/:xId", swaggerValidation.validate, (req, res, next) => {
+  res.send("POST /rest/users/");
 });
 
-app.delete("/rest/users/{id}", swaggerValidation.validate, (req, res, next) => {
-  res.send("DELETE /rest/users/{id}");
+app.delete("/rest/users/:xId", swaggerValidation.validate, (req, res, next) => {
+  res.send("DELETE /rest/users/:xId");
 });
 
 //rest/userRoles
@@ -80,18 +80,18 @@ app.post(
 );
 
 app.put(
-  "/rest/orgUnitAttributes/{id}",
+  "/rest/orgUnitAttributes/:xId",
   swaggerValidation.validate,
   (req, res, next) => {
-    res.send("PUT /rest/orgUnitAttributes/{id}");
+    res.send("PUT /rest/orgUnitAttributes/:xId");
   }
 );
 
 app.delete(
-  "/rest/orgUnitAttributes/{id}",
+  "/rest/orgUnitAttributes/:xId",
   swaggerValidation.validate,
   (req, res, next) => {
-    res.send("DELETE /rest/orgUnitAttributes/{id}");
+    res.send("DELETE /rest/orgUnitAttributes/:xId");
   }
 );
 
