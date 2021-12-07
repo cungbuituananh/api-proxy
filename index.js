@@ -19,13 +19,7 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 
 //rest/orgUnits
-app.get(
-  "/rest/orgUnits",
-  swaggerValidation.validate,
-  forwardRequest,
-  async (req, res, next) => {
-    res.send(res.response);
-  }
+app.get("/rest/orgUnits", swaggerValidation.validate, forwardRequest, async (req, res, next) => res.send(res.response)
 );
 
 app.post(
@@ -149,6 +143,11 @@ app.delete(
   }
 );
 
+//rest/validateReg
+app.post("/rest/validateReg", swaggerValidation.validate, (req, res, next) => res.send("ok"));
+//rest/validateAddSIP
+app.post("/rest/validateAddSIP", swaggerValidation.validate, (req, res, next) => res.send("ok"));
+
 //health
 app.get("/health", (req, res, next) => {
   res.send("This is a proxy service");
@@ -195,6 +194,6 @@ async function forwardRequest(req, res, next) {
   }
 }
 
-app.listen(PORT, HOST, () => {
-  console.log(`Starting Proxy at ${HOST}:${PORT}`);
-});
+
+
+app.listen(PORT, HOST, () => console.log(`Starting Proxy at ${HOST}:${PORT}`));
