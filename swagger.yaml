@@ -48,7 +48,7 @@ paths:
                 maxLength: 250
               parentId:
                 type: integer
-                maxLength: 10
+                maximum: 9999999999
               name:
                 type: string
                 maxLength: 250
@@ -95,10 +95,10 @@ paths:
                 maxLength: 250
               value:
                 type: integer
-                maxLength: 10
+                maximum: 9999999999
               orgUnitId:
                 type: integer
-                maxLength: 10
+                maximum: 9999999999
       responses:
         "200":
           description: 200 success
@@ -152,7 +152,7 @@ paths:
                 maxLength: 250
               orgUnitId:
                 type: integer
-                maxLength: 10
+                maximum: 9999999999
       responses:
         "200":
           description: 200 success
@@ -196,7 +196,7 @@ paths:
               id:
                 type: integer
               passwordBlocked:
-                type: string
+                type: integer
       responses:
         "200":
           description: 200 success
@@ -211,7 +211,7 @@ paths:
         - name: xId
           in: path
           type: integer
-          maxLength: 10
+          maximum: 9999999999
           required: true
       responses:
         "200":
@@ -242,16 +242,16 @@ paths:
             properties:
               id:
                 type: integer
-                maxLength: 10
+                maximum: 9999999999
               name:
                 type: string
                 maxLength: 250
               value:
                 type: integer
-                maxLength: 10
+                maximum: 9999999999
               orgUnitId:
                 type: integer
-                maxLength: 10
+                maximum: 9999999999
       responses:
         "200":
           description: 200 success
@@ -263,10 +263,10 @@ paths:
       tags:
         - orgUnitAttributes
       parameters:
-        - name: id
+        - name: xId
           in: path
           type: integer
-          maxLength: 10
+          maximum: 9999999999
           required: true
       responses:
         "200":
@@ -300,12 +300,12 @@ paths:
           description: 200 success
         default:
           description: unexpected error
-  /rest/addresss:
+  /rest/addresses:
     get:
       summary: get list Sip
       operationId: getListSip
       tags:
-        - address
+        - addresses
       parameters:
         - name: where
           in: query
@@ -322,33 +322,33 @@ paths:
       summary: Assign SIP
       operationId: assignSip
       tags:
-        - address
+        - addresses
       parameters:
         - name: body
           in: body
           required: true
           schema:
             required:
-              - integer
+              - number
               - orgUnitId
             properties:
-              integer:
+              number:
                 type: integer
-                maxLength: 10
+                maximum: 10
               orgUnitId:
                 type: integer
-                maxLength: 10
+                maximum: 10
       responses:
         "200":
           description: 200 success
         default:
           description: unexpected error
-  /rest/addresss/{xId}:
+  /rest/addresses/{xId}:
     delete:
       summary: Delete Sip
       operationId: deleteSip
       tags:
-        - address
+        - addresses
       parameters:
         - name: xId
           in: path
