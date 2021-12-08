@@ -360,7 +360,56 @@ paths:
           description: 200 success
         default:
           description: unexpected error
-
+  /rest/validateReg:
+    post:
+      summary: validate information before register
+      operationId: valiedateReg
+      tags:
+        - register
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            required:
+              - name
+              - email
+              - publicNumber
+            properties:
+              name:
+                type: string
+              email:
+                type: string
+              publicNumber:
+                type: string
+      responses:
+        "200":
+          description: 200 success
+        default:
+          description: unexpected error
+  /rest/validateAddSIP:
+    post:
+      summary: validate SIP number
+      operationId: validateSIP
+      tags:
+        - validateSip
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            required:
+              - number
+            properties:
+              number:
+                type: string
+                maxLength: 250
+      responses:
+        "200":
+          description: 200 success
+        default:
+          description: unexpected error
+  
 definitions:
   Error:
     type: object
