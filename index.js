@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 
 const swaggerValidation = require("openapi-validator-middleware");
 
+
 const app = express();
 
 swaggerValidation.init("swagger.yaml");
@@ -19,132 +20,36 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 
 //rest/orgUnits
-app.get("/rest/orgUnits", swaggerValidation.validate, forwardRequest, async (req, res, next) => res.send(res.response)
+app.get("/rest/orgUnits", swaggerValidation.validate, forwardRequest, async (req, res, next) => {
+  console.log(req)
+  res.send(res.response)}
 );
 
-app.post(
-  "/rest/orgUnits",
-  swaggerValidation.validate,
-  forwardRequest,
-  async (req, res, next) => {
-    res.send(res.response);
-  }
-);
+app.post("/rest/orgUnits", swaggerValidation.validate, forwardRequest,async (req, res, next) => res.send(res.response));
 
 //rest/users
-app.get(
-  "/rest/users",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("GET /rest/users");
-  }
-);
-
-app.post(
-  "/rest/users",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("POST /rest/users");
-  }
-);
-
-app.put(
-  "/rest/users/:xId",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("POST /rest/users/:xId");
-  }
-);
-
-app.delete(
-  "/rest/users/:xId",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("DELETE /rest/users/:xId");
-  }
-);
+app.get("/rest/users", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("GET /rest/users"));
+app.post("/rest/users", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("POST /rest/users"));
+app.put("/rest/users/:xId", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("POST /rest/users/:xId"));
+app.delete("/rest/users/:xId", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("DELETE /rest/users/:xId"));
 
 //rest/userRoles
-app.post(
-  "/rest/userRoles",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("POST /rest/userRoles");
-  }
-);
+app.post("/rest/userRoles", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("POST /rest/userRoles"));
 
 //rest/addresses
-app.get(
-  "/rest/addresses",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("GET /rest/addresses");
-  }
-);
-
-app.post(
-  "/rest/addresses",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("POST /rest/addresses");
-  }
-);
-
-app.delete(
-  "/rest/addresses",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("DELETE /rest/addresses");
-  }
-);
+app.get("/rest/addresses", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("GET /rest/addresses"));
+app.post("/rest/addresses", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("POST /rest/addresses"));
+app.delete("/rest/addresses", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("DELETE /rest/addresses"));
 
 //rest/orgUnitAttributes
-app.get(
-  "/rest/orgUnitAttributes",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("GET /rest/orgUnitAttributes");
-  }
-);
-
-app.post(
-  "/rest/orgUnitAttributes",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("POST /rest/orgUnitAttributes");
-  }
-);
-
-app.put(
-  "/rest/orgUnitAttributes/:xId",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("PUT /rest/orgUnitAttributes/:xId");
-  }
-);
-
-app.delete(
-  "/rest/orgUnitAttributes/:xId",
-  swaggerValidation.validate,
-  forwardRequest,
-  (req, res, next) => {
-    res.send("DELETE /rest/orgUnitAttributes/:xId");
-  }
-);
+app.get("/rest/orgUnitAttributes", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("GET /rest/orgUnitAttributes"));
+app.post("/rest/orgUnitAttributes", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("POST /rest/orgUnitAttributes"));
+app.put("/rest/orgUnitAttributes/:xId", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("PUT /rest/orgUnitAttributes/:xId"));
+app.delete("/rest/orgUnitAttributes/:xId", swaggerValidation.validate, forwardRequest, (req, res, next) => res.send("DELETE /rest/orgUnitAttributes/:xId"));
 
 //rest/validateReg
 app.post("/rest/validateReg", swaggerValidation.validate, (req, res, next) => res.send("ok"));
+
 //rest/validateAddSIP
 app.post("/rest/validateAddSIP", swaggerValidation.validate, (req, res, next) => res.send("ok"));
 
