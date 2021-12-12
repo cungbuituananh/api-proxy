@@ -333,11 +333,11 @@ paths:
               - orgUnitId
             properties:
               number:
-                type: integer
-                maximum: 10
+                type: string
+                maxLength: 250
               orgUnitId:
                 type: integer
-                maximum: 10
+                maximum: 9999999999
       responses:
         "200":
           description: 200 success
