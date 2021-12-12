@@ -180,7 +180,7 @@ app.post("/rest/validateAddSIP", swaggerValidation.validate, validateAuthorizati
     .status(400)
     .json({
       status: false,
-      message: `${existNumbers}`
+      message: [existNumbers]
     });
 });
 
