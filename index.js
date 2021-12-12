@@ -20,6 +20,8 @@ app.use(bodyParser.json());
 
 //rest/orgUnits
 app.get("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, forwardRequest, async (req, res, next) => {
+  console.log(req.body)
+
   res.send(res.response);
 });
 
@@ -54,8 +56,39 @@ app.get("/rest/addresses", swaggerValidation.validate, validateAuthorization, fo
   res.send(res.response);
 });
 
-app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
+app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
+  const numbers = req.body.number.split(",");
+
+  const callRequests = [];
+  const existNumbers = [];
+  const notExistNumbers = []
+
+  numbers.forEach((number) => {
+    callRequests.push(callRequest(req, "GET",`/rest/addresses?where=number.eq('${number}')`,{}))
+  });
+
+  const responses = await axios.all(callRequests)
+
+  for(let i = 0; i < responses.length; i++) {
+    if(responses[i].data.length > 0) {
+      existNumbers.push(numbers[i])
+    } else {
+      notExistNumbers.push(numbers[i])
+
+      return res
+        .status(200)
+        .json({
+          status: true
+      });
+    }
+  }
+
+  res
+    .status(400)
+    .json({
+      status: false,
+      messages: `${existNumbers}`
+    });
 });
 
 app.delete("/rest/addresses", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
@@ -79,16 +112,100 @@ app.delete("/rest/orgUnitAttributes/:xId", swaggerValidation.validate, validateA
   res.send(res.response);
 });
 
+//rest/validateReg
+app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
+  const email = req.body.email;
+  const name = req.body.name;
+  const publicNumber = req.body.publicNumber;
+
+  const validateEmailResponse = await callRequest(req, "GET", `/rest/users?where=email.eq('${email}')`, {});
+  if (validateEmailResponse.data.users && validateEmailResponse.data.users.length > 0 ) {
+    return res
+      .status(400)
+      .json({
+        status: false,
+        messages: "The email is already exists"
+    });
+  }; 
+
+  const validateNameResponse = await callRequest(req, "GET", `/rest/orgUnits?where=name.eq('${name}')`, {});
+  if (validateNameResponse.data.orgUnits && validateNameResponse.data.orgUnits.length > 0 ) {
+    return res
+      .status(400)
+      .json({
+        status: false,
+        messages: "The name is already exists"
+    });
+  }; 
+
+  const validatePublicNumberResponse = await callRequest(req, "GET", `/rest/addresses?where=number.eq('${publicNumber}')`, {});
+  if (validatePublicNumberResponse.data.addresses && validatePublicNumberResponse.data.addresses.length > 0 ) {
+    return res
+      .status(400)
+      .json({
+        status: false,
+        messages: "The public number is already exists"
+    });
+  }; 
+
+  res
+    .status(200)
+    .json({
+      status: true
+    })
+});
+
+//rest/validateAddSIP
+app.post("/rest/validateAddSIP", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
+  const numbers = req.body.number.split(",");
+
+  const callRequests = [];
+  const existNumbers = [];
+
+  numbers.forEach((number) => {
+    callRequests.push(callRequest(req, "GET",`/rest/addresses?where=number.eq('${number}')`,{}))
+  });
+
+  const responses = await axios.all(callRequests)
+
+  for(let i = 0; i < responses.length; i++) {
+    if(responses[i].data.length > 0) {
+      // console.log(parseInt(numbers[i]).data) 
+      existNumbers.push(parseInt(numbers[i]).data)
+    } else {
+      console.log(parseInt(numbers[i]))
+      return res
+        .status(200)
+        .json({
+          status: true
+      });
+    }
+  }
+
+  res
+    .status(400)
+    .json({
+      status: false,
+      messages: `${existNumbers}`
+    });
+});
+
 //health
 app.get("/health", (req, res, next) => {
   res.send("This is a proxy service");
 });
 
 //test
-app.get("/test", async (req, res, next) => {
-  let response = await callRequest(req, 'GET', "/rest/addresses?where=number.eq('0399093745')", {});
-  console.log(response.data);
-});
+// app.get("/test", async (req, res, next) => {
+//   let response = await callRequest(req, 'GET', "/rest/addresses?where=number.eq('0399093745')", {});
+//   console.log(response.data);
+// });
+// const responses = await axios.all([
+//   callRequest(req, 'GET', "/rest/addresses?where=number.eq('0399093745')", {}),
+//   callRequest(req, 'GET', "/rest/addresses?where=number.eq('0399093745')", {})
+// ])
+// console.log(responses[0].data);
+// console.log(responses[1].data);
 
 app.use((err, req, res, next) => {
   if (err instanceof swaggerValidation.InputValidationError) {
@@ -146,17 +263,17 @@ async function forwardRequest(req, res, next) {
 
 async function callRequest(req, method, url, query, data) {
   return await axios({
-    method: req.method,
+    method: method,
     timeout: 1000,
     headers: {
       Authorization: req.headers.authorization
     },
     url: UPSTREAM + url,
-    query: query,
-    data: {
-      status: true,
-      data: data
-    }
+    // query: query,
+    // data: {
+    //   status: true,
+    //   data: data
+    // }
   })
 }
 

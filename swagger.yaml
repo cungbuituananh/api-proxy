@@ -333,11 +333,11 @@ paths:
               - orgUnitId
             properties:
               number:
-                type: integer
-                maximum: 10
+                type: string
+                maxLength: 250
               orgUnitId:
                 type: integer
-                maximum: 10
+                maximum: 9999999999
       responses:
         "200":
           description: 200 success
@@ -380,11 +380,16 @@ paths:
                 type: string
               email:
                 type: string
+                # format: email 
+                pattern: '^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$'
               publicNumber:
                 type: string
+                pattern: '((84|0)([3|5|7|8|9]))([0-9]{8})\b'
       responses:
         "200":
           description: 200 success
+        "400":
+          description: Error
         default:
           description: unexpected error
   /rest/validateAddSIP:
@@ -403,13 +408,14 @@ paths:
             properties:
               number:
                 type: string
+                pattern: '((84|0)([3|5|7|8|9]))([0-9]{8})\b'
                 maxLength: 250
       responses:
         "200":
           description: 200 success
         default:
           description: unexpected error
-  
+
 definitions:
   Error:
     type: object
@@ -422,3 +428,4 @@ definitions:
         # format: int32
       message:
         type: string
+
