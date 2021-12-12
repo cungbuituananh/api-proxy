@@ -219,7 +219,6 @@ app.use((err, req, res, next) => {
 
 
 async function validateAuthorization(req, res, next) {
-  console.log("header:", req.headers)
   if (req.headers.authorization === undefined) {
     return res.status(403)
       .json({
