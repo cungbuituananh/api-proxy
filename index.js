@@ -62,20 +62,20 @@ app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, a
   const callRequests = [];
   const existNumbers = [];
   numbers.forEach((number) => {
-    callRequests.push(callRequest(req, "GET",`/rest/addresses?where=number.eq('${number}')`,{}))
+    callRequests.push(callRequest(req, "GET", `/rest/addresses?where=number.eq('${number}')`, {}))
   });
 
   const responses = await axios.all(callRequests)
 
-  for(let i = 0; i < responses.length; i++) {
-    if(responses[i].data.length > 0) {
+  for (let i = 0; i < responses.length; i++) {
+    if (responses[i].data.length > 0) {
       existNumbers.push(numbers[i])
     } else {
       return res
         .status(200)
         .json({
           status: true
-      });
+        });
     }
   }
 
@@ -115,34 +115,34 @@ app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization,
   const publicNumber = req.body.publicNumber;
 
   const validateEmailResponse = await callRequest(req, "GET", `/rest/users?where=email.eq('${email}')`, {});
-  if (validateEmailResponse.data.users && validateEmailResponse.data.users.length > 0 ) {
+  if (validateEmailResponse.data.users && validateEmailResponse.data.users.length > 0) {
     return res
       .status(400)
       .json({
         status: false,
         message: ["The email is already exists"]
-    });
-  }; 
+      });
+  };
 
   const validateNameResponse = await callRequest(req, "GET", `/rest/orgUnits?where=name.eq('${name}')`, {});
-  if (validateNameResponse.data.orgUnits && validateNameResponse.data.orgUnits.length > 0 ) {
+  if (validateNameResponse.data.orgUnits && validateNameResponse.data.orgUnits.length > 0) {
     return res
       .status(400)
       .json({
         status: false,
         message: "The name is already exists"
-    });
-  }; 
+      });
+  };
 
   const validatePublicNumberResponse = await callRequest(req, "GET", `/rest/addresses?where=number.eq('${publicNumber}')`, {});
-  if (validatePublicNumberResponse.data.addresses && validatePublicNumberResponse.data.addresses.length > 0 ) {
+  if (validatePublicNumberResponse.data.addresses && validatePublicNumberResponse.data.addresses.length > 0) {
     return res
       .status(400)
       .json({
         status: false,
         message: "The public number is already exists"
-    });
-  }; 
+      });
+  };
 
   res
     .status(200)
@@ -159,22 +159,20 @@ app.post("/rest/validateAddSIP", swaggerValidation.validate, validateAuthorizati
   const existNumbers = [];
 
   numbers.forEach((number) => {
-    callRequests.push(callRequest(req, "GET",`/rest/addresses?where=number.eq('${number}')`,{}))
+    callRequests.push(callRequest(req, "GET", `/rest/addresses?where=number.eq('${number}')`, {}))
   });
 
   const responses = await axios.all(callRequests)
 
-  for(let i = 0; i < responses.length; i++) {
-    if(responses[i].data.length > 0) {
-      // console.log(parseInt(numbers[i]).data) 
+  for (let i = 0; i < responses.length; i++) {
+    if (responses[i].data.length > 0) {
       existNumbers.push(parseInt(numbers[i]).data)
     } else {
-      console.log(parseInt(numbers[i]))
       return res
         .status(200)
         .json({
           status: true
-      });
+        });
     }
   }
 
@@ -191,28 +189,16 @@ app.get("/health", (req, res, next) => {
   res.send("This is a proxy service");
 });
 
-//test
-// app.get("/test", async (req, res, next) => {
-//   let response = await callRequest(req, 'GET', "/rest/addresses?where=number.eq('0399093745')", {});
-//   console.log(response.data);
-// });
-// const responses = await axios.all([
-//   callRequest(req, 'GET', "/rest/addresses?where=number.eq('0399093745')", {}),
-//   callRequest(req, 'GET', "/rest/addresses?where=number.eq('0399093745')", {})
-// ])
-// console.log(responses[0].data);
-// console.log(responses[1].data);
-
 app.use((err, req, res, next) => {
   if (err instanceof swaggerValidation.InputValidationError) {
     let fieldName = '';
-    if(err.errors[0].dataPath) {
+    if (err.errors[0].dataPath) {
       const dataPath = err.errors[0].dataPath.split('.');
       fieldName = dataPath[dataPath.length - 1] + ' ';
-    }else {
+    } else {
       fieldName = 'body ';
     }
-    
+
     return res
       .status(400)
       .json({
@@ -254,27 +240,19 @@ async function forwardRequest(req, res, next) {
       }
     })
 
-    if (response.status < 400) {
-      res.response = {
-        status: true,
-        data: response.data
-      };
-      next();
-    } else {
-      return res
-        .status(response.status)
-        .json({
-          status: false,
-          data: req.body
-        });
-    }
+    res.response = {
+      status: true,
+      data: response.data
+    };
+    next();
+
   } catch (ex) {
     return res
-        .status(ex.response.status)
-        .json({
-          status: false,
-          data: ex.response.data
-        });
+      .status(ex.response.status)
+      .json({
+        status: false,
+        message: [ex.response.data]
+      });
   }
 }
 
@@ -286,11 +264,11 @@ async function callRequest(req, method, url, query, data) {
       Authorization: req.headers.authorization
     },
     url: UPSTREAM + url,
-    // query: query,
-    // data: {
-    //   status: true,
-    //   data: data
-    // }
+    query: query,
+    data: {
+      status: true,
+      data: data
+    }
   })
 }
 
