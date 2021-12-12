@@ -130,7 +130,7 @@ app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization,
       .status(400)
       .json({
         status: false,
-        message: "The name is already exists"
+        message: ["The name is already exists"]
       });
   };
 
@@ -140,7 +140,7 @@ app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization,
       .status(400)
       .json({
         status: false,
-        message: "The public number is already exists"
+        message: ["The public number is already exists"]
       });
   };
 
