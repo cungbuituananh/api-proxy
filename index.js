@@ -205,7 +205,6 @@ app.get("/health", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (err instanceof swaggerValidation.InputValidationError) {
-    console.log(err);
     let fieldName = '';
     if(err.errors[0].dataPath) {
       const dataPath = err.errors[0].dataPath.split('.');
@@ -270,7 +269,12 @@ async function forwardRequest(req, res, next) {
         });
     }
   } catch (ex) {
-    console.log(ex)
+    return res
+        .status(ex.response.status)
+        .json({
+          status: false,
+          data: ex.response.data
+        });
   }
 }
 
