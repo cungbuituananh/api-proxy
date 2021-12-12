@@ -61,8 +61,6 @@ app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, a
 
   const callRequests = [];
   const existNumbers = [];
-  const notExistNumbers = []
-
   numbers.forEach((number) => {
     callRequests.push(callRequest(req, "GET",`/rest/addresses?where=number.eq('${number}')`,{}))
   });
@@ -73,8 +71,6 @@ app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, a
     if(responses[i].data.length > 0) {
       existNumbers.push(numbers[i])
     } else {
-      notExistNumbers.push(numbers[i])
-
       return res
         .status(200)
         .json({
@@ -87,7 +83,7 @@ app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, a
     .status(400)
     .json({
       status: false,
-      messages: `${existNumbers}`
+      messages: [existNumbers]
     });
 });
 
@@ -209,13 +205,27 @@ app.get("/health", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (err instanceof swaggerValidation.InputValidationError) {
+    console.log(err);
+    let fieldName = '';
+    if(err.errors[0].dataPath) {
+      const dataPath = err.errors[0].dataPath.split('.');
+      fieldName = dataPath[dataPath.length - 1] + ' ';
+    }else {
+      fieldName = 'body ';
+    }
+    
     return res
       .status(400)
       .json({
-        messages: err.errors.map((info) => info.message)
+        status: false,
+        messages: capitalizeFirstLetter(fieldName + err.errors[0].message)
       });
   }
 });
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 
 async function validateAuthorization(req, res, next) {
