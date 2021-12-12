@@ -83,7 +83,7 @@ app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, a
     .status(400)
     .json({
       status: false,
-      messages: [existNumbers]
+      message: [existNumbers]
     });
 });
 
@@ -120,7 +120,7 @@ app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization,
       .status(400)
       .json({
         status: false,
-        messages: "The email is already exists"
+        message: ["The email is already exists"]
     });
   }; 
 
@@ -130,7 +130,7 @@ app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization,
       .status(400)
       .json({
         status: false,
-        messages: "The name is already exists"
+        message: "The name is already exists"
     });
   }; 
 
@@ -140,7 +140,7 @@ app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization,
       .status(400)
       .json({
         status: false,
-        messages: "The public number is already exists"
+        message: "The public number is already exists"
     });
   }; 
 
@@ -182,7 +182,7 @@ app.post("/rest/validateAddSIP", swaggerValidation.validate, validateAuthorizati
     .status(400)
     .json({
       status: false,
-      messages: `${existNumbers}`
+      message: `${existNumbers}`
     });
 });
 
@@ -218,7 +218,7 @@ app.use((err, req, res, next) => {
       .status(400)
       .json({
         status: false,
-        messages: capitalizeFirstLetter(fieldName + err.errors[0].message)
+        message: err.errors.map((info) => capitalizeFirstLetter(fieldName + info.message))
       });
   }
 });
@@ -256,7 +256,10 @@ async function forwardRequest(req, res, next) {
     })
 
     if (response.status < 400) {
-      res.response = response.data;
+      res.response = {
+        status: true,
+        data: response.data
+      };
       next();
     } else {
       return res
