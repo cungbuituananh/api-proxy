@@ -151,8 +151,8 @@ paths:
                 type: string
                 maxLength: 250
               orgUnitId:
-                type: integer
-                maximum: 9999999999
+                type: string
+                maxLength: 10
       responses:
         "200":
           description: 200 success
