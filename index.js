@@ -34,8 +34,28 @@ app.get("/rest/users", swaggerValidation.validate, validateAuthorization, forwar
   res.send(res.response);
 });
 
-app.post("/rest/users", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
+app.post("/rest/users", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
+  try {
+    let [lastName, ...firstName] = req.body.fullName.split(" ")
+    delete req.body.fullName;
+    const response = await callRequest(req, "POST", `/rest/users`, {}, {
+      lastName: lastName,
+      firstName: firstName.join(" "),
+      ...req.body
+    });
+
+    res.status(200).json({
+      status: true
+    })
+  } catch (ex) {
+    return res
+      .status(ex.response.status)
+      .json({
+        status: false,
+        message: [ex.response.data]
+      });
+  }
+
 });
 
 app.put("/rest/users/:xId", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
@@ -244,7 +264,6 @@ async function forwardRequest(req, res, next) {
     next();
 
   } catch (ex) {
-    console.log('forwardRequest exception: ', ex)
     return res
       .status(ex.response.status)
       .json({
@@ -255,9 +274,10 @@ async function forwardRequest(req, res, next) {
 }
 
 async function callRequest(req, method, url, query, data) {
+  console.log("Body", data);
   return await axios({
     method: method,
-    timeout: 1000,
+    timeout: 30000,
     headers: {
       Authorization: req.headers.authorization
     },

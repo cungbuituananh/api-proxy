@@ -132,16 +132,12 @@ paths:
           required: true
           schema:
             required:
-              - firstName
-              - lastName
+              - fullName
               - email
               - language
               - orgUnitId
             properties:
-              firstName:
-                type: string
-                maxLength: 250
-              lastName:
+              fullName:
                 type: string
                 maxLength: 250
               email:
