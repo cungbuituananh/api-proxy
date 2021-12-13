@@ -231,7 +231,6 @@ app.get("/health", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (err instanceof swaggerValidation.InputValidationError) {
-console.log(err)
 
     let fieldName = [];
     for (let i = 0; i < err.errors.length; i++) {

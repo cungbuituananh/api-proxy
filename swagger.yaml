@@ -99,7 +99,7 @@ paths:
                 type: string
                 # maximum: 9999999999
               orgUnitId:
-                type: number
+                type: integer
                 maximum: 9999999999
       responses:
         "200":
