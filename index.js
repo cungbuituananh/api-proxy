@@ -20,9 +20,21 @@ app.use(bodyParser.json());
 
 //rest/orgUnits
 app.get("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, forwardRequest, async (req, res, next) => {
-  console.log(req.body)
-
-  res.send(res.response);
+  console.log(res.response.data)
+  if(res.response.data && res.response.data.orgUnits && res.response.data.orgUnits.length > 0) {
+    res
+    .status(200)
+    .json({
+      status: false,
+      message: ["The PBX name is already exists"]
+    })
+  } else {
+    res
+    .status(200)
+    .json({
+      status: true
+    })
+  }
 });
 
 app.post("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, forwardRequest, async (req, res, next) => {
