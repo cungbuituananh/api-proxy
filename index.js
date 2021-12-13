@@ -234,10 +234,7 @@ async function forwardRequest(req, res, next) {
       },
       url: UPSTREAM + req.url,
       query: req.query,
-      data: {
-        status: true,
-        data: req.body
-      }
+      data: req.body
     })
 
     res.response = {
@@ -247,6 +244,7 @@ async function forwardRequest(req, res, next) {
     next();
 
   } catch (ex) {
+    console.log('forwardRequest exception: ', ex)
     return res
       .status(ex.response.status)
       .json({
@@ -265,10 +263,7 @@ async function callRequest(req, method, url, query, data) {
     },
     url: UPSTREAM + url,
     query: query,
-    data: {
-      status: true,
-      data: data
-    }
+    data: data
   })
 }
 
