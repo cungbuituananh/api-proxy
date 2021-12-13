@@ -32,12 +32,17 @@ app.get("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, for
     res
     .status(200)
     .json({
-      status: true
+      status: true,
+      data: {
+        orgUnits: []
+      }
     })
   }
 });
 
 app.post("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, forwardRequest, async (req, res, next) => {
+  console.log(req.body)
+
   res.send(res.response);
 });
 
@@ -45,6 +50,7 @@ app.post("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, fo
 app.get("/rest/users", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
   res.send(res.response);
 });
+
 
 app.post("/rest/users", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
   try {
@@ -124,11 +130,13 @@ app.delete("/rest/addresses", swaggerValidation.validate, validateAuthorization,
 });
 
 //rest/orgUnitAttributes
+// FIXME: not working
 app.get("/rest/orgUnitAttributes", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
   res.send(res.response);
 });
 
 app.post("/rest/orgUnitAttributes", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
+
   res.send(res.response);
 });
 
@@ -223,19 +231,23 @@ app.get("/health", (req, res, next) => {
 
 app.use((err, req, res, next) => {
   if (err instanceof swaggerValidation.InputValidationError) {
-    let fieldName = '';
-    if (err.errors[0].dataPath) {
-      const dataPath = err.errors[0].dataPath.split('.');
-      fieldName = dataPath[dataPath.length - 1] + ' ';
-    } else {
-      fieldName = 'body ';
+console.log(err)
+
+    let fieldName = [];
+    for (let i = 0; i < err.errors.length; i++) {
+      if (err.errors[i].dataPath) {
+        const dataPath = err.errors[i].dataPath.split('.');
+        fieldName.push(dataPath[dataPath.length - 1] + ' ');
+      } else {
+        fieldName.push('body ');
+      }
     }
 
     return res
       .status(400)
       .json({
         status: false,
-        message: err.errors.map((info) => capitalizeFirstLetter(fieldName + info.message))
+        message: err.errors.map((info,index) => capitalizeFirstLetter(fieldName[index] + info.message))
       });
   }
 });
