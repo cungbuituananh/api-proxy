@@ -81,7 +81,14 @@ app.post("/rest/userRoles", swaggerValidation.validate, validateAuthorization, f
 
 //rest/addresses
 app.get("/rest/addresses", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
+  if (res.response.data.addresses && res.response.data.addresses.length > 0) {
+    res.send(res.response);
+  } 
+
+  res.send({
+    status: false,
+    message: ["PBX does not exists"]
+  });
 });
 
 app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
