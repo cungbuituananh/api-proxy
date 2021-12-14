@@ -97,7 +97,7 @@ app.get("/rest/addresses", swaggerValidation.validate, validateAuthorization, fo
 
   res.send({
     status: false,
-    message: "Error"
+    message: ["PBX does not exists"]
   });
 });
 
