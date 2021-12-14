@@ -20,22 +20,14 @@ app.use(bodyParser.json());
 
 //rest/orgUnits
 app.get("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, forwardRequest, async (req, res, next) => {
-  console.log(res.response.data)
-  if(res.response.data && res.response.data.orgUnits && res.response.data.orgUnits.length > 0) {
-    res
-    .status(200)
-    .json({
+  if (res.response.data && res.response.data.orgUnits && res.response.data.orgUnits.length > 0) {
+    res.status(400).json({
       status: false,
       message: ["The PBX name is already exists"]
     })
   } else {
-    res
-    .status(200)
-    .json({
-      status: true,
-      data: {
-        orgUnits: []
-      }
+    res.status(200).json({
+      status: true
     })
   }
 });
@@ -66,12 +58,10 @@ app.post("/rest/users", swaggerValidation.validate, validateAuthorization, async
       status: true
     })
   } catch (ex) {
-    return res
-      .status(ex.response.status)
-      .json({
-        status: false,
-        message: [ex.response.data]
-      });
+    return res.status(ex.response.status).json({
+      status: false,
+      message: [ex.response.data]
+    });
   }
 
 });
@@ -109,20 +99,16 @@ app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, a
     if (responses[i].data.length > 0) {
       existNumbers.push(numbers[i])
     } else {
-      return res
-        .status(200)
-        .json({
-          status: true
-        });
+      return res.status(200).json({
+        status: true
+      });
     }
   }
 
-  res
-    .status(400)
-    .json({
-      status: false,
-      message: [existNumbers]
-    });
+  res.status(400).json({
+    status: false,
+    message: [existNumbers]
+  });
 });
 
 app.delete("/rest/addresses", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
@@ -150,78 +136,85 @@ app.delete("/rest/orgUnitAttributes/:xId", swaggerValidation.validate, validateA
 
 //rest/validateReg
 app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
-  const email = req.body.email;
-  const name = req.body.name;
-  const publicNumber = req.body.publicNumber;
+  try {
+    const email = req.body.email;
+    const name = req.body.name;
+    const publicNumber = req.body.publicNumber;
 
-  const validateEmailResponse = await callRequest(req, "GET", `/rest/users?where=email.eq('${email}')`, {});
-  if (validateEmailResponse.data.users && validateEmailResponse.data.users.length > 0) {
-    return res
-      .status(400)
-      .json({
+    const validateEmailResponse = await callRequest(req, "GET", `/rest/users?where=email.eq('${email}')`, {});
+    if (validateEmailResponse.data.users && validateEmailResponse.data.users.length > 0) {
+      return res.status(400).json({
         status: false,
         message: ["The email is already exists"]
       });
-  };
+    };
 
-  const validateNameResponse = await callRequest(req, "GET", `/rest/orgUnits?where=name.eq('${name}')`, {});
-  if (validateNameResponse.data.orgUnits && validateNameResponse.data.orgUnits.length > 0) {
-    return res
-      .status(400)
-      .json({
-        status: false,
-        message: ["The name is already exists"]
-      });
-  };
+    const validateNameResponse = await callRequest(req, "GET", `/rest/orgUnits?where=name.eq('${name}')`, {});
+    if (validateNameResponse.data.orgUnits && validateNameResponse.data.orgUnits.length > 0) {
+      return res
+        .status(400)
+        .json({
+          status: false,
+          message: ["The name is already exists"]
+        });
+    };
 
-  const validatePublicNumberResponse = await callRequest(req, "GET", `/rest/addresses?where=number.eq('${publicNumber}')`, {});
-  if (validatePublicNumberResponse.data.addresses && validatePublicNumberResponse.data.addresses.length > 0) {
-    return res
-      .status(400)
-      .json({
-        status: false,
-        message: ["The public number is already exists"]
-      });
-  };
+    const validatePublicNumberResponse = await callRequest(req, "GET", `/rest/addresses?where=number.eq('${publicNumber}')`, {});
+    if (validatePublicNumberResponse.data.addresses && validatePublicNumberResponse.data.addresses.length > 0) {
+      return res
+        .status(400)
+        .json({
+          status: false,
+          message: ["The public number is already exists"]
+        });
+    };
 
-  res
-    .status(200)
-    .json({
+    res.status(200).json({
       status: true
     })
+  } catch (ex) {
+    return res.status(ex.response.status).json({
+      status: false,
+      message: [ex.response.data]
+    });
+  }
 });
 
 //rest/validateAddSIP
 app.post("/rest/validateAddSIP", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
-  const numbers = req.body.number.split(",");
+  try {
+    const numbers = req.body.number.split(",");
 
-  const callRequests = [];
-  const existNumbers = [];
+    const callRequests = [];
+    const existNumbers = [];
 
-  numbers.forEach((number) => {
-    callRequests.push(callRequest(req, "GET", `/rest/addresses?where=number.eq('${number}')`, {}))
-  });
+    numbers.forEach((number) => {
+      callRequests.push(callRequest(req, "GET", `/rest/addresses?where=number.eq('${number}')`, {}))
+    });
 
-  const responses = await axios.all(callRequests)
+    const responses = await axios.all(callRequests)
 
-  for (let i = 0; i < responses.length; i++) {
-    if (responses[i].data.length > 0) {
-      existNumbers.push(parseInt(numbers[i]).data)
-    } else {
-      return res
-        .status(200)
-        .json({
+    for (let i = 0; i < responses.length; i++) {
+      if (responses[i].data.length > 0) {
+        existNumbers.push(parseInt(numbers[i]).data)
+      } else {
+        return res.status(200).json({
           status: true
         });
+      }
     }
-  }
 
-  res
-    .status(400)
-    .json({
+    res.status(400).json({
       status: false,
       message: [existNumbers]
     });
+
+  } catch (ex) {
+    return res.status(ex.response.status).json({
+      status: false,
+      message: [ex.response.data]
+    });
+  }
 });
 
 //health
@@ -242,11 +235,10 @@ app.use((err, req, res, next) => {
       }
     }
 
-    return res
-      .status(400)
+    return res.status(400)
       .json({
         status: false,
-        message: err.errors.map((info,index) => capitalizeFirstLetter(fieldName[index] + info.message))
+        message: err.errors.map((info, index) => capitalizeFirstLetter(fieldName[index] + info.message))
       });
   }
 });
@@ -287,12 +279,18 @@ async function forwardRequest(req, res, next) {
     next();
 
   } catch (ex) {
-    return res
-      .status(ex.response.status)
-      .json({
+    if (ex.response && ex.response.status == 404) {
+      return res.status(ex.response.status).json({
+        status: false,
+        message: ['Đối tượng không tồn tại']
+      });
+    } else {
+      return res.status(ex.response.status).json({
         status: false,
         message: [ex.response.data]
       });
+    }
+
   }
 }
 
