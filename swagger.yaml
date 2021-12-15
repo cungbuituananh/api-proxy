@@ -99,8 +99,8 @@ paths:
                 type: string
                 # maximum: 9999999999
               orgUnitId:
-                type: integer
-                maximum: 9999999999
+                type: string
+                # maximum: 9999999999
       responses:
         "200":
           description: 200 success
