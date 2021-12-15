@@ -93,14 +93,14 @@ paths:
             properties:
               name:
                 type: string
-                pattern: '^(maxExtensions|maxChannels)$'
+                pattern: '^(maxExternalChannels|maxExtensions|maxChannels)$'
                 maxLength: 250
               value:
                 type: string
                 # maximum: 9999999999
               orgUnitId:
                 type: integer
-                maximum: 9999999999
+                # maximum: 9999999999
       responses:
         "200":
           description: 200 success
@@ -114,7 +114,7 @@ paths:
       parameters:
         - name: where
           in: query
-          type: integer
+          type: string
           required: true
       responses:
         "200":
@@ -148,7 +148,7 @@ paths:
                 maxLength: 250
               password:
                 type: string
-                pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$"
+                pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}'
                 maxLength: 20
               language:
                 type: string
@@ -156,7 +156,7 @@ paths:
                 maxLength: 250
               orgUnitId:
                 type: integer
-                maxLength: 9999999999
+                # maxLength: 250
       responses:
         "200":
           description: 200 success
@@ -301,7 +301,7 @@ paths:
                 type: string
                 pattern: '^pbx$'
               orgUnitId:
-                type: string
+                type: integer
       responses:
         "200":
           description: 200 success
@@ -342,7 +342,7 @@ paths:
                 type: string
                 maxLength: 250
               orgUnitId:
-                type: string
+                type: integer
                 # TODO: Need maxLength ? 
                 # maximum: 9999999999
       responses:
