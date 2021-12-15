@@ -114,7 +114,7 @@ paths:
       parameters:
         - name: where
           in: query
-          type: integer
+          type: string
           required: true
       responses:
         "200":
