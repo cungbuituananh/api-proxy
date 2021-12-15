@@ -38,11 +38,14 @@ app.post("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, fo
   res.send(res.response);
 });
 
+app.delete("/rest/orgUnits/:xId", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
+  res.send(res.response);
+});
+
 //rest/users
 app.get("/rest/users", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
   res.send(res.response);
 });
-
 
 app.post("/rest/users", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
   try {
