@@ -11,7 +11,7 @@ const app = express();
 swaggerValidation.init("swagger.yaml");
 
 // Configuration
-const PORT = 4000;
+const PORT = 8080;
 const HOST = "0.0.0.0";
 const UPSTREAM = "https://apac-v7-sandbox.aarenet.com";
 
