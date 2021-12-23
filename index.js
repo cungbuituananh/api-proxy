@@ -83,7 +83,7 @@ app.get("/rest/addresses", swaggerValidation.validate, validateAuthorization, fo
     status: false,
     message: ["PBX does not exists"]
   });
-});
+}); 
 
 app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
   const numbers = req.body.number.split(",");
@@ -185,12 +185,16 @@ app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization,
 app.post("/rest/validateAddSIP", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
   try {
     const numbers = req.body.number.split(",");
+    const regex = /((84|0)([3|5|7|8|9]))([0-9]{8})\b/;
 
     const callRequests = [];
     const existNumbers = [];
 
     numbers.forEach((number) => {
-      callRequests.push(callRequest(req, "GET", `/rest/addresses?where=number.eq('${number}')`, {}))
+      if (!regex.test(number)) {
+        throw `${number} invalid`
+      }
+      callRequests.push(callRequest(req, "GET", `/rest/addresses?where=number.eq('${number}')`,"", {}))
     });
 
     const responses = await axios.all(callRequests)
@@ -211,10 +215,10 @@ app.post("/rest/validateAddSIP", swaggerValidation.validate, validateAuthorizati
     });
 
   } catch (ex) {
-    return res.status(ex.response.status).json({
-      status: false,
-      message: [ex.response.data]
-    });
+    return res.status(400).json({
+        status: false,
+        message: [ex]
+      });
   }
 });
 
