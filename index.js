@@ -112,7 +112,7 @@ app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, a
   });
 });
 
-app.delete("/rest/addresses", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
+app.delete("/rest/addresses/:xId", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
   res.send(res.response);
 });
 
