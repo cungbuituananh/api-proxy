@@ -20,7 +20,14 @@ app.use(bodyParser.json());
 
 //rest/orgUnits
 app.get("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, forwardRequest, async (req, res, next) => {
-  res.send(res.response);
+  if (res.response.data.orgUnits && res.response.data.orgUnits.length > 0) {
+    res.send(res.response);
+  }
+
+  res.send({
+    status: false,
+    message: ["PBX does not exists"]
+  });
 });
 
 app.post("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, forwardRequest, async (req, res, next) => {
@@ -35,7 +42,14 @@ app.delete("/rest/orgUnits/:xId", swaggerValidation.validate, validateAuthorizat
 
 //rest/users
 app.get("/rest/users", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
+  if (res.response.data.users && res.response.data.users.length > 0) {
+    res.send(res.response);
+  }
+
+  res.send({
+    status: false,
+    message: ["User does not exists"]
+  });
 });
 
 app.post("/rest/users", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
@@ -81,7 +95,7 @@ app.get("/rest/addresses", swaggerValidation.validate, validateAuthorization, fo
 
   res.send({
     status: false,
-    message: ["PBX does not exists"]
+    message: ["Address does not exists"]
   });
 }); 
 
@@ -91,25 +105,34 @@ app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, a
   const callRequests = [];
   const existNumbers = [];
   numbers.forEach((number) => {
-    callRequests.push(callRequest(req, "GET", `/rest/addresses?where=number.eq('${number}')`, {}))
+    callRequests.push(callRequest(req, "GET", `/rest/addresses?where=number.eq('${number}')`, null))
   });
 
-  const responses = await axios.all(callRequests)
-
+  const responses = await axios.all(callRequests);
   for (let i = 0; i < responses.length; i++) {
-    if (responses[i].data.length > 0) {
-      existNumbers.push(numbers[i])
-    } else {
-      return res.status(200).json({
-        status: true
-      });
+    if (responses[i].data.addresses.length > 0) {
+      existNumbers.push(numbers[i]);
     }
   }
+ 
+  if(existNumbers.length > 0) {
+    res.status(400).json({
+      status: false,
+      message: [existNumbers]
+    });
+  } else {
+    for (let i = 0;i < numbers.length; i++) {
+      const response = await callRequest(req, "POST", `/rest/addresses`, {}, {
+        number: numbers[i],
+        orgUnitId: req.body.orgUnitId
+      });     
+    }
+    res.send({
+      status: true
+    });
+  }
 
-  res.status(400).json({
-    status: false,
-    message: [existNumbers]
-  });
+
 });
 
 app.delete("/rest/addresses/:xId", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
@@ -170,6 +193,7 @@ app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization,
         });
     };
 
+    forwardRequest
     res.status(200).json({
       status: true
     })
