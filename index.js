@@ -4,249 +4,26 @@ const request = require("request");
 const axios = require("axios");
 const bodyParser = require('body-parser');
 
+const {config} = require('./config');
+const utils = require('./helpers/utils');
 const swaggerValidation = require("openapi-validator-middleware");
-
-const app = express();
-
 swaggerValidation.init("swagger.yaml");
 
-// Configuration
-const PORT = 8080;
-const HOST = "0.0.0.0";
-const UPSTREAM = "https://apac-v7-sandbox.aarenet.com";
+const routes = require('./routes');
 
+const app = express();
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 
-//rest/orgUnits
-app.get("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, forwardRequest, async (req, res, next) => {
-  if (res.response.data.orgUnits && res.response.data.orgUnits.length > 0) {
-    res.send(res.response);
-  }
+app.use('/', routes.addresses);
+app.use('/', routes.orgUnitAttributes);
+app.use('/', routes.orgUnits);
+app.use('/', routes.users);
 
-  res.send({
-    status: false,
-    message: ["PBX does not exists"]
-  });
-});
+app.use('/', routes.userRoles);
 
-app.post("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, forwardRequest, async (req, res, next) => {
-  console.log(req.body)
+app.use('/', routes.custom);
 
-  res.send(res.response);
-});
-
-app.delete("/rest/orgUnits/:xId", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
-});
-
-//rest/users
-app.get("/rest/users", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  if (res.response.data.users && res.response.data.users.length > 0) {
-    res.send(res.response);
-  }
-
-  res.send({
-    status: false,
-    message: ["User does not exists"]
-  });
-});
-
-app.post("/rest/users", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
-  try {
-    let [lastName, ...firstName] = req.body.fullName.split(" ")
-    delete req.body.fullName;
-    const response = await callRequest(req, "POST", `/rest/users`, {}, {
-      lastName: lastName,
-      firstName: firstName.join(" "),
-      ...req.body
-    });
-
-    res.status(200).json({
-      status: true
-    })
-  } catch (ex) {
-    return res.status(ex.response.status).json({
-      status: false,
-      message: [ex.response.data]
-    });
-  }
-
-});
-
-app.put("/rest/users/:xId", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
-});
-
-app.delete("/rest/users/:xId", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
-});
-
-//rest/userRoles
-app.post("/rest/userRoles", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
-});
-
-//rest/addresses
-app.get("/rest/addresses", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  if (res.response.data.addresses && res.response.data.addresses.length > 0) {
-    res.send(res.response);
-  } 
-
-  res.send({
-    status: false,
-    message: ["Address does not exists"]
-  });
-}); 
-
-app.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
-  const numbers = req.body.number.split(",");
-
-  const callRequests = [];
-  const existNumbers = [];
-  numbers.forEach((number) => {
-    callRequests.push(callRequest(req, "GET", `/rest/addresses?where=number.eq('${number}')`, null))
-  });
-
-  const responses = await axios.all(callRequests);
-  for (let i = 0; i < responses.length; i++) {
-    if (responses[i].data.addresses.length > 0) {
-      existNumbers.push(numbers[i]);
-    }
-  }
- 
-  if(existNumbers.length > 0) {
-    res.status(400).json({
-      status: false,
-      message: [existNumbers]
-    });
-  } else {
-    for (let i = 0;i < numbers.length; i++) {
-      const response = await callRequest(req, "POST", `/rest/addresses`, {}, {
-        number: numbers[i],
-        orgUnitId: req.body.orgUnitId
-      });     
-    }
-    res.send({
-      status: true
-    });
-  }
-
-
-});
-
-app.delete("/rest/addresses/:xId", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
-});
-
-//rest/orgUnitAttributes
-// FIXME: not working
-app.get("/rest/orgUnitAttributes", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
-});
-
-app.post("/rest/orgUnitAttributes", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-
-  res.send(res.response);
-});
-
-app.put("/rest/orgUnitAttributes/:xId", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
-});
-
-app.delete("/rest/orgUnitAttributes/:xId", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-  res.send(res.response);
-});
-
-//rest/validateReg
-app.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
-  try {
-    const email = req.body.email;
-    const name = req.body.name;
-    const publicNumber = req.body.publicNumber;
-
-    const validateEmailResponse = await callRequest(req, "GET", `/rest/users?where=email.eq('${email}')`, {});
-    if (validateEmailResponse.data.users && validateEmailResponse.data.users.length > 0) {
-      return res.status(400).json({
-        status: false,
-        message: ["The email is already exists"]
-      });
-    };
-
-    const validateNameResponse = await callRequest(req, "GET", `/rest/orgUnits?where=name.eq('${name}')`, {});
-    if (validateNameResponse.data.orgUnits && validateNameResponse.data.orgUnits.length > 0) {
-      return res
-        .status(400)
-        .json({
-          status: false,
-          message: ["The name is already exists"]
-        });
-    };
-
-    const validatePublicNumberResponse = await callRequest(req, "GET", `/rest/addresses?where=number.eq('${publicNumber}')`, {});
-    if (validatePublicNumberResponse.data.addresses && validatePublicNumberResponse.data.addresses.length > 0) {
-      return res
-        .status(400)
-        .json({
-          status: false,
-          message: ["The public number is already exists"]
-        });
-    };
-
-    forwardRequest
-    res.status(200).json({
-      status: true
-    })
-  } catch (ex) {
-    return res.status(ex.response.status).json({
-      status: false,
-      message: [ex.response.data]
-    });
-  }
-});
-
-//rest/validateAddSIP
-app.post("/rest/validateAddSIP", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
-  try {
-    const numbers = req.body.number.split(",");
-    const regex = /((84|0)([3|5|7|8|9]))([0-9]{8})\b/;
-
-    const callRequests = [];
-    const existNumbers = [];
-
-    numbers.forEach((number) => {
-      if (!regex.test(number)) {
-        throw `${number} invalid`
-      }
-      callRequests.push(callRequest(req, "GET", `/rest/addresses?where=number.eq('${number}')`,"", {}))
-    });
-
-    const responses = await axios.all(callRequests)
-
-    for (let i = 0; i < responses.length; i++) {
-      if (responses[i].data.length > 0) {
-        existNumbers.push(parseInt(numbers[i]).data)
-      } else {
-        return res.status(200).json({
-          status: true
-        });
-      }
-    }
-
-    res.status(400).json({
-      status: false,
-      message: [existNumbers]
-    });
-
-  } catch (ex) {
-    return res.status(400).json({
-        status: false,
-        message: [ex]
-      });
-  }
-});
-
-//health
 app.get("/health", (req, res, next) => {
   res.send("This is a proxy service");
 });
@@ -263,80 +40,16 @@ app.use((err, req, res, next) => {
         fieldName.push('body ');
       }
     }
-
+console.log(err.errors);
     return res.status(400)
       .json({
         status: false,
-        message: err.errors.map((info, index) => capitalizeFirstLetter(fieldName[index] + info.message))
+        message: err.errors.map((info, index) => utils.capitalizeFirstLetter(fieldName[index] + info.message))
       });
   }
 });
 
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
 
-
-async function validateAuthorization(req, res, next) {
-  if (req.headers.authorization === undefined) {
-    return res.status(403)
-      .json({
-        status: false,
-        message: ['Authorization header is required']
-      });
-  }
-  next();
-}
-
-async function forwardRequest(req, res, next) {
-  try {
-    let response = await axios({
-      method: req.method,
-      timeout: 1000,
-      headers: {
-        Authorization: req.headers.authorization
-      },
-      url: UPSTREAM + req.url,
-      query: req.query,
-      data: req.body
-    })
-
-    res.response = {
-      status: true,
-      data: response.data
-    };
-    next();
-
-  } catch (ex) {
-    if (ex.response && ex.response.status == 404) {
-      return res.status(ex.response.status).json({
-        status: false,
-        message: ['Đối tượng không tồn tại']
-      });
-    } else {
-      return res.status(ex.response.status).json({
-        status: false,
-        message: [ex.response.data]
-      });
-    }
-
-  }
-}
-
-async function callRequest(req, method, url, query, data) {
-  console.log("Body", data);
-  return await axios({
-    method: method,
-    timeout: 30000,
-    headers: {
-      Authorization: req.headers.authorization
-    },
-    url: UPSTREAM + url,
-    query: query,
-    data: data
-  })
-}
-
-app.listen(PORT, HOST, () => {
-  console.log(`Starting Proxy at ${HOST}:${PORT}`);
+app.listen(config.port, config.host, () => {
+  console.log(`Starting Proxy at ${config.host}:${config.port}`);
 });
