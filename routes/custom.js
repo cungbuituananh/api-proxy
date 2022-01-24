@@ -4,10 +4,11 @@ const router = express.Router();
 const swaggerValidation = require("openapi-validator-middleware");
 swaggerValidation.init("swagger.yaml");
 
-const { validation, forward } = require('../middlewares')
+const { database, validation, forward } = require('../middlewares')
 const { callRequest } = require('../helpers/api');
 const { User, Attribute } = require('../database/models');
 
+const { syncAttribute } = database;
 const { validateAuthorization } = validation;
 const { forwardRequest } = forward;
 
@@ -96,7 +97,7 @@ router.post("/rest/validateAddSIP", swaggerValidation.validate, validateAuthoriz
     }
 });
 
-router.post("/rest/block", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
+router.post("/rest/block", swaggerValidation.validate, validateAuthorization, syncAttribute, async (req, res, next) => {
     try {
         const pbxId = req.body.orgUnitId;
 

@@ -5,12 +5,11 @@ const swaggerValidation = require("openapi-validator-middleware");
 swaggerValidation.init("swagger.yaml");
 
 const { database, validation, forward } = require('../middlewares');
-const { syncAttribute } = database;
 const { validateAuthorization } = validation;
 const { forwardRequest } = forward;
 const { callRequest } = require('../helpers/api');
 
-router.get("/rest/orgUnitAttributes", swaggerValidation.validate, validateAuthorization, forwardRequest, syncAttribute, (req, res, next) => {
+router.get("/rest/orgUnitAttributes", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
     res.send(res.response);
 });
 
