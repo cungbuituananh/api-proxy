@@ -6,7 +6,7 @@ exports.forwardRequest = async (req, res, next) => {
   try {
     let response = await axios({
       method: req.method,
-      timeout: 1000,
+      timeout: config.timeout,
       headers: {
         Authorization: req.headers.authorization
       },
@@ -18,19 +18,27 @@ exports.forwardRequest = async (req, res, next) => {
       status: true,
       data: response.data
     };
+    console.log(response.status, response.data);
     next();
 
   } catch (ex) {
-    console.log('Exception: ', ex.response);
-    if (ex.response && ex.response.status == 404) {
-      return res.status(ex.response.status).json({
-        status: false,
-        message: ['Đối tượng không tồn tại']
-      });
+    console.log('Exception: ', ex);
+    if (ex.response && ex.response.status) {
+      if (ex.response.status == 404) {
+        return res.status(ex.response.status).json({
+          status: false,
+          message: ['Đối tượng không tồn tại']
+        });
+      } else if (ex.response && ex.response.status) {
+        return res.status(ex.response.status).json({
+          status: false,
+          message: [ex.response.data]
+        });
+      }
     } else {
-      return res.status(ex.response.status).json({
+      return res.status(500).json({
         status: false,
-        message: [ex.response.data]
+        message: [ex.message]
       });
     }
   }

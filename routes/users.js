@@ -31,7 +31,8 @@ router.post("/rest/users", swaggerValidation.validate, validateAuthorization, as
         });
 
         res.status(200).json({
-            status: true
+            status: true,
+            data: response.data
         })
     } catch (ex) {
         return res.status(ex.response.status).json({

@@ -10,7 +10,6 @@ const { User, Attribute } = require('../database/models');
 
 const { syncAttribute } = database;
 const { validateAuthorization } = validation;
-const { forwardRequest } = forward;
 
 router.post("/rest/validateReg", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
     try {
@@ -123,20 +122,35 @@ router.post("/rest/block", swaggerValidation.validate, validateAuthorization, sy
                 value: 0,
                 orgUnitId: pbxId
             });
-        }
+        } else {
+            const createMaxChannels = await callRequest(req, "POST", `/rest/orgUnitAttributes`, {}, {
+                name: "maxChannels",
+                value: 0,
+                orgUnitId: pbxId
+            });
 
+            await Attribute.update({
+                channelId: createMaxChannels.data.id,
+                channel: createMaxChannels.data.value
+            }, {
+                where: {
+                    pbxId
+                }
+            });
+        }
 
         const users = await User.findAll({
             where: {
                 pbxId
             }
         });
-
         for (let i = 0; i < users.length; i++) {
             const blockUser = await callRequest(req, "PUT", `/rest/users/${users[i].userId}`, {}, {
                 id: users[i].userId,
                 passwordBlocked: 1895393074
             });
+            console.log(users[i].userId);
+            console.log(blockUser.status + "-" + blockUser.data);
         }
         res.status(200).json({
             status: true

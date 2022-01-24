@@ -4,7 +4,7 @@ exports.config = {
     port: 8080,
     host: '0.0.0.0',
     upstream: 'https://apac-v7-sandbox.aarenet.com',
-
+    timeout: 10000
 };
 
 exports.sequelize = new Sequelize({
