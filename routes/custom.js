@@ -147,7 +147,7 @@ router.post("/rest/block", swaggerValidation.validate, validateAuthorization, sy
         for (let i = 0; i < users.length; i++) {
             const blockUser = await callRequest(req, "PUT", `/rest/users/${users[i].userId}`, {}, {
                 id: users[i].userId,
-                passwordBlocked: 1895393074
+                passwordBlocked: 9223372036854775807
             });
             console.log(users[i].userId);
             console.log(blockUser.status + "-" + blockUser.data);
@@ -206,7 +206,7 @@ router.post("/rest/open", swaggerValidation.validate, validateAuthorization, asy
         for (let i = 0; i < users.length; i++) {
             const blockUser = await callRequest(req, "PUT", `/rest/users/${users[i].userId}`, {}, {
                 id: users[i].userId,
-                passwordBlocked: 1895393074
+                passwordBlocked: 0
             });
         }
 
