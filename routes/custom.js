@@ -147,7 +147,7 @@ router.post("/rest/block", swaggerValidation.validate, validateAuthorization, sy
         for (let i = 0; i < users.length; i++) {
             const blockUser = await callRequest(req, "PUT", `/rest/users/${users[i].userId}`, {}, {
                 id: users[i].userId,
-                passwordBlocked: 9223372036854775807
+                passwordBlocked: 9223372036854111111
             });
             console.log(users[i].userId);
             console.log(blockUser.status + "-" + blockUser.data);
