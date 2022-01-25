@@ -149,15 +149,11 @@ router.post("/rest/block", swaggerValidation.validate, validateAuthorization, sy
                 id: users[i].userId,
                 passwordBlocked: 9223372036854111111
             });
-            console.log(users[i].userId);
-            console.log(blockUser.status + "-" + blockUser.data);
         }
         res.status(200).json({
             status: true
         })
     } catch (ex) {
-        console.log(ex);
-
         return res.status(400).json({
             status: false,
             message: [ex]
@@ -215,8 +211,6 @@ router.post("/rest/open", swaggerValidation.validate, validateAuthorization, asy
         })
 
     } catch (ex) {
-        console.log(ex);
-
         return res.status(400).json({
             status: false,
             message: [ex]

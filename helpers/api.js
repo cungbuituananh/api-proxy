@@ -3,7 +3,7 @@ const axios = require('axios');
 const {config} = require('../config');
 
 exports.callRequest = async function (req, method, url, query, data) {
-  const response = await axios({
+  const request = {
     method: method,
     timeout: config.timeout,
     headers: {
@@ -12,8 +12,9 @@ exports.callRequest = async function (req, method, url, query, data) {
     url: config.upstream + url,
     query: query,
     data: data
-  });
-  
-  console.log(response.status, response.data);
+  };
+
+  const response = await axios(request);
+  console.info(request, response.data, response.status);
   return response;
 }

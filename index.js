@@ -40,7 +40,7 @@ app.use((err, req, res, next) => {
         fieldName.push('body ');
       }
     }
-console.log(err.errors);
+    console.log(err.errors);
     return res.status(400)
       .json({
         status: false,

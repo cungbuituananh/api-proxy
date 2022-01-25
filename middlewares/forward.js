@@ -1,26 +1,16 @@
 const axios = require('axios');
 
 const { config } = require('../config');
+const { callRequest } = require('../helpers/api');
 
 exports.forwardRequest = async (req, res, next) => {
   try {
-    let response = await axios({
-      method: req.method,
-      timeout: config.timeout,
-      headers: {
-        Authorization: req.headers.authorization
-      },
-      url: config.upstream + req.url,
-      query: req.query,
-      data: req.body
-    })
+    const response = await callRequest(req, req.method, req.url, req.query, req.body);    
     res.response = {
       status: true,
       data: response.data
     };
-    console.log(response.status, response.data);
     next();
-
   } catch (ex) {
     console.log('Exception: ', ex);
     if (ex.response && ex.response.status) {
