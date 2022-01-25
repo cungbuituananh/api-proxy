@@ -26,9 +26,9 @@ exports.syncAttribute = async (req, res, next) => {
     const response = await callRequest(req, "GET", `/rest/orgUnitAttributes?where=orgUnitId.eq(${pbxId})`);
     const attributes = response.data.orgUnitAttributes;
 
-    const extension = attributes.find(item => item.name == 'maxExtensions');
-    const externalChannel = attributes.find(item => item.name == 'maxExternalChannels');
-    const channel = attributes.find(item => item.name == 'maxChannels');
+    const extension = attributes.sort((a,b) => b.id - a.id).find(item => item.name == 'maxExtensions');
+    const externalChannel = attributes.sort((a,b) => b.id - a.id).find(item => item.name == 'maxExternalChannels');
+    const channel = attributes.sort((a,b) => b.id - a.id).find(item => item.name == 'maxChannels');
 
     let attribute = await Attribute.findOne({
         where: {
