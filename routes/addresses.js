@@ -10,14 +10,7 @@ const { forwardRequest } = forward;
 const { callRequest } = require('../helpers/api');
 
 router.get("/rest/addresses", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
-    if (res.response.data.addresses && res.response.data.addresses.length > 0) {
-        res.send(res.response);
-    }
-
-    res.send({
-        status: false,
-        message: ["Address does not exists"]
-    });
+    res.send(res.response);
 });
 
 router.post("/rest/addresses", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
