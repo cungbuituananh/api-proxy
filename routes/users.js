@@ -5,11 +5,11 @@ const swaggerValidation = require("openapi-validator-middleware");
 swaggerValidation.init("swagger.yaml");
 
 const { database, validation, forward } = require('../middlewares')
-const { validateAuthorization } = validation;
+const { validateAuthorization, validateEmailUnique } = validation;
 const { forwardRequest } = forward;
 const { callRequest } = require('../helpers/api');
 
-router.get("/rest/users", swaggerValidation.validate, validateAuthorization, forwardRequest, (req, res, next) => {
+router.get("/rest/users", swaggerValidation.validate, validateAuthorization, validateEmailUnique, forwardRequest, (req, res, next) => {
     if (res.response.data.users && res.response.data.users.length > 0) {
         res.send(res.response);
     }
@@ -20,7 +20,7 @@ router.get("/rest/users", swaggerValidation.validate, validateAuthorization, for
     });
 });
 
-router.post("/rest/users", swaggerValidation.validate, validateAuthorization, async (req, res, next) => {
+router.post("/rest/users", swaggerValidation.validate, validateAuthorization, validateEmailUnique, async (req, res, next) => {
     try {
         let [lastName, ...firstName] = req.body.fullName.split(" ")
         delete req.body.fullName;

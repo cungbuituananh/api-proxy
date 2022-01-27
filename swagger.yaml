@@ -146,13 +146,16 @@ paths:
                 type: string
                 pattern: '^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$'
                 maxLength: 250
+              password:
+                type: string
+                pattern: '^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{6,}$'
+                maxLength: 20
               language:
                 type: string
                 pattern: '^(en|de|fr|it|vi)$'
                 maxLength: 250
               orgUnitId:
                 type: integer
-                # maxLength: 250
       responses:
         "200":
           description: 200 success

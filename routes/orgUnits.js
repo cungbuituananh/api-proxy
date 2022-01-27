@@ -5,7 +5,7 @@ const swaggerValidation = require("openapi-validator-middleware");
 swaggerValidation.init("swagger.yaml");
 
 const { validation, forward } = require('../middlewares')
-const { validateAuthorization } = validation;
+const { validateAuthorization, validateNameUnique } = validation;
 const { forwardRequest } = forward;
 const { callRequest } = require('../helpers/api');
 
@@ -20,7 +20,7 @@ router.get("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, 
     });
 });
 
-router.post("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, forwardRequest, async (req, res, next) => {
+router.post("/rest/orgUnits", swaggerValidation.validate, validateAuthorization, validateNameUnique, forwardRequest, async (req, res, next) => {
     res.send(res.response);
 });
 
