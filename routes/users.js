@@ -30,12 +30,21 @@ router.post("/rest/users", swaggerValidation.validate, validateAuthorization, va
             ...req.body
         });
 
+        if (response.data) {
+            const userRoleResponse = await callRequest(req, "POST", `/rest/userRoles`, {}, {
+                userId: "" + response.data.id,
+                role: "pbx",
+                orgUnitId: response.data.orgUnitId
+            });
+        }
+        
+
         res.status(200).json({
             status: true,
             data: response.data
         })
     } catch (ex) {
-        return res.status(ex.response.status).json({
+        res.status(ex.response.status).json({
             status: false,
             message: [ex.response.data]
         });

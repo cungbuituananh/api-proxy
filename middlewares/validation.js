@@ -2,13 +2,14 @@ const { callRequest } = require('../helpers/api');
 
 exports.validateAuthorization = async (req, res, next) => {
     if (req.headers.authorization === undefined) {
-        return res.status(403)
+        res.status(403)
             .json({
                 status: false,
                 message: ['Authorization header is required']
-            });
+        });
+    }else {
+        next();
     }
-    next();
 }
 
 exports.validateNameUnique = async (req, res, next) => {
@@ -20,13 +21,15 @@ exports.validateNameUnique = async (req, res, next) => {
                 status: false,
                 message: ["Name is already exists"]
             });
+        }else {
+            next();
         }
+    }else {
+        next();
     }
-    next();
 }
 
 exports.validateEmailUnique = async (req, res, next) => {
-    
     if (req.body.email) {
         const response = await callRequest(req, "GET", `/rest/users?where=email.eq('${req.body.email}')`);
         if (response && response.data && response.data.users && response.data.users.length > 0) {
@@ -34,7 +37,10 @@ exports.validateEmailUnique = async (req, res, next) => {
                 status: false,
                 message: ["Email is already exists"]
             });
+        }else {
+            next();
         }
+    }else {
+        next();
     }
-    next();
 }

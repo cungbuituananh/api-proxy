@@ -8,11 +8,12 @@ exports.config = {
 };
 
 //SQLite
-exports.sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: './database/api-proxy.sqlite',
-    logging: false,
-});
+// exports.sequelize = new Sequelize({
+//     dialect: 'sqlite',
+//     storage: './database/api-proxy.sqlite',
+//     logging: true,
+//     dialectOptions: {mode: 2}
+// });
 
 
 //MySQL
@@ -29,3 +30,5 @@ exports.sequelize = new Sequelize({
 //     },
 //     logging: false,
 // });
+
+exports.sequelize = new Sequelize('postgres://user:pass@example.com:5432/dbname')

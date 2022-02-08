@@ -59,9 +59,12 @@ exports.Attribute = sequelize.define('attribute', {
     timestamps: false
 });
 
+//SQLite
+
 // CREATE TABLE users (id integer PRIMARY KEY AUTOINCREMENT, pbx_id integer,user_id integer);
 // CREATE TABLE attributes (id integer PRIMARY KEY AUTOINCREMENT, pbx_id integer, extension_id integer, extension integer, external_channel_id integer, external_channel integer, channel_id integer, channel integer);
 
+//MySQL
 
 // DROP TABLE IF EXISTS `users`;
 // CREATE TABLE `users` (
@@ -83,3 +86,23 @@ exports.Attribute = sequelize.define('attribute', {
 //   `channel` bigint(20) DEFAULT NULL,
 //   PRIMARY KEY (`id`)
 // ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+//Postgres
+
+// CREATE TABLE `users` (
+//   `id` SERIAL PRIMARY KEY,
+//   `pbx_id` int(20) DEFAULT NULL,
+//   `user_id` int(20) DEFAULT NULL
+// )
+
+// CREATE TABLE `attributes` (
+//   `id` SERIAL PRIMARY KEY,
+//   `pbx_id` int(20) DEFAULT NULL,
+//   `extension_id` int(20) DEFAULT NULL,
+//   `extension` int(20) DEFAULT NULL,
+//   `external_channel_id` int(20) DEFAULT NULL,
+//   `external_channel` int(20) DEFAULT NULL,
+//   `channel_id` int(20) DEFAULT NULL,
+//   `channel` int(20) DEFAULT NULL
+// )
