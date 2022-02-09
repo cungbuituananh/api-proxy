@@ -8,6 +8,7 @@ const { database, validation, forward } = require('../middlewares')
 const { validateAuthorization, validateEmailUnique } = validation;
 const { forwardRequest } = forward;
 const { callRequest } = require('../helpers/api');
+const { User } = require('../database/models');
 
 router.get("/rest/users", swaggerValidation.validate, validateAuthorization, validateEmailUnique, forwardRequest, (req, res, next) => {
     if (res.response.data.users && res.response.data.users.length > 0) {
@@ -36,8 +37,23 @@ router.post("/rest/users", swaggerValidation.validate, validateAuthorization, va
                 role: "pbx",
                 orgUnitId: response.data.orgUnitId
             });
-        }
+
+            const pbxId = userRoleResponse.data.orgUnitId;
+            const userId = userRoleResponse.data.userId;
         
+            if (pbxId && userId) {
+                let user = await User.findOne({
+                    where: {
+                        pbxId,
+                        userId
+                    }
+                });
+        
+                if (!user) {
+                    user = await User.create({ pbxId, userId });
+                }
+            }
+        }        
 
         res.status(200).json({
             status: true,
