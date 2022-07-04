@@ -93,7 +93,7 @@ paths:
             properties:
               name:
                 type: string
-                pattern: '^(maxExternalChannels|maxExtensions|maxChannels)$'
+                pattern: '^(maxExternalChannels|maxExtensions|maxChannels|maxServiceExtensions)$'
                 maxLength: 250
               value:
                 type: string
